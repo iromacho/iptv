@@ -3,355 +3,455 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="IPTV gratis sin registro con buscador y reproductor de canales.">
-<title>IPTV Gratis | Canales en directo</title>
+<meta name="description" content="IPTV España gratis con canales en directo, buscador y cuenta opcional.">
+<title>IPTV España Gratis</title>
+
 <style>
 :root{
-  --bg:#0f1117;
-  --panel:#171a22;
-  --panel-soft:#1f2330;
-  --text:#f5f7fb;
-  --muted:#9ca3af;
-  --brand:#e11d48;
-  --brand-dark:#be123c;
-  --line:#2b3040;
-  --ok:#22c55e;
+  --bg:#07080d;
+  --panel:#11131b;
+  --panel-soft:#181b26;
+  --text:#ffffff;
+  --muted:#a7adbb;
+  --red:#e50914;
+  --red-dark:#b80710;
+  --line:#252a36;
+  --green:#22c55e;
 }
 *{box-sizing:border-box}
 body{
   margin:0;
-  min-height:100vh;
   font-family:Arial,Helvetica,sans-serif;
-  background:var(--bg);
+  background:
+    radial-gradient(circle at top left,rgba(229,9,20,.20),transparent 360px),
+    linear-gradient(180deg,#090a10 0%,var(--bg) 100%);
   color:var(--text);
+  min-height:100vh;
 }
+
+/* HEADER */
 header{
+  padding:14px;
+  background:rgba(7,8,13,.92);
   position:sticky;
   top:0;
   z-index:10;
-  background:rgba(15,17,23,.96);
   border-bottom:1px solid var(--line);
+  backdrop-filter:blur(12px);
 }
-.header-inner{
-  width:min(1120px,calc(100% - 28px));
-  margin:auto;
-  padding:18px 0;
-  display:grid;
-  gap:14px;
-}
-.brand-row{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:14px;
-}
-h1{
-  margin:0;
-  font-size:clamp(24px,4vw,36px);
-  letter-spacing:-.6px;
-}
-.free-badge{
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  padding:8px 12px;
-  border-radius:999px;
-  background:rgba(34,197,94,.12);
-  color:#86efac;
-  border:1px solid rgba(34,197,94,.35);
-  font-weight:700;
-  white-space:nowrap;
-}
-.subtitle{
-  margin:0;
-  color:var(--muted);
-  line-height:1.5;
-}
-.toolbar{
-  display:flex;
-  gap:10px;
-  align-items:center;
-}
-.search{
-  width:100%;
-  padding:14px 16px;
-  border-radius:12px;
-  border:1px solid var(--line);
-  background:var(--panel);
-  color:var(--text);
-  outline:none;
-  font-size:16px;
-}
-.search:focus{border-color:var(--brand)}
-main{
-  width:min(1120px,calc(100% - 28px));
-  margin:auto;
-  padding:24px 0 40px;
-}
-.info-row{
-  display:flex;
-  flex-wrap:wrap;
-  gap:10px;
-  margin-bottom:18px;
-  color:var(--muted);
-  font-size:14px;
-}
-.info-pill{
-  padding:8px 10px;
-  border:1px solid var(--line);
-  border-radius:999px;
-  background:var(--panel);
-}
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(170px,1fr));
-  gap:14px;
-}
-.card{
-  min-height:150px;
-  padding:16px;
-  border:1px solid var(--line);
-  border-radius:16px;
-  background:var(--panel);
-  display:flex;
-  flex-direction:column;
-  justify-content:space-between;
-  gap:14px;
-  cursor:pointer;
-  transition:transform .16s ease,border-color .16s ease,background .16s ease;
-}
-.card:hover,.card:focus{
-  transform:translateY(-3px);
-  border-color:var(--brand);
-  background:var(--panel-soft);
-  outline:none;
-}
-.logo{
-  width:54px;
-  height:54px;
-  border-radius:14px;
-  display:grid;
-  place-items:center;
-  color:white;
-  font-weight:800;
-  font-size:13px;
-}
-.channel-name{
-  margin:0;
-  font-size:16px;
-  line-height:1.25;
-}
-.watch-text{
-  color:#fda4af;
-  font-size:13px;
-  font-weight:700;
-}
-.empty{
-  display:none;
-  margin-top:22px;
-  padding:22px;
-  border:1px dashed var(--line);
-  border-radius:16px;
-  text-align:center;
-  color:var(--muted);
-}
-.modal{
-  position:fixed;
-  inset:0;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  padding:18px;
-  background:rgba(0,0,0,.82);
-  z-index:30;
-}
-.modal.open{display:flex}
-.player-box{
-  width:min(1100px,100%);
-  height:min(70vh,680px);
-  background:#000;
-  border-radius:16px;
-  overflow:hidden;
-  border:1px solid var(--line);
-  box-shadow:0 24px 70px rgba(0,0,0,.5);
-}
-.player-head{
-  height:52px;
-  padding:0 12px 0 16px;
+.header-top{
+  max-width:1180px;
+  margin:0 auto 12px;
   display:flex;
   align-items:center;
   justify-content:space-between;
   gap:12px;
+}
+h1{
+  margin:0;
+  font-size:22px;
+  color:#fff;
+  letter-spacing:.5px;
+}
+h1 span{color:var(--red)}
+.subtitle{
+  margin:4px 0 0;
+  color:var(--muted);
+  font-size:13px;
+}
+.account-btn{
+  border:1px solid rgba(34,197,94,.45);
+  background:rgba(34,197,94,.12);
+  color:#a7f3d0;
+  border-radius:999px;
+  padding:10px 14px;
+  font-weight:bold;
+  cursor:pointer;
+  white-space:nowrap;
+}
+.account-btn:hover{background:rgba(34,197,94,.2)}
+.search-wrap{
+  max-width:1180px;
+  margin:auto;
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+input{
+  width:100%;
+  padding:13px 14px;
+  border-radius:12px;
+  border:1px solid var(--line);
+  background:var(--panel);
+  color:#fff;
+  outline:none;
+  font-size:15px;
+}
+input:focus{border-color:var(--red)}
+.count{
+  color:var(--muted);
+  font-size:13px;
+  white-space:nowrap;
+}
+
+.notice{
+  max-width:1180px;
+  margin:16px auto 0;
+  padding:0 14px;
+  color:var(--muted);
+  font-size:14px;
+}
+.notice strong{color:#fff}
+
+/* GRID */
+.grid{
+  max-width:1180px;
+  margin:auto;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:14px;
+  padding:14px;
+}
+
+/* CARD */
+.card{
+  aspect-ratio:4/5;
+  background:linear-gradient(180deg,var(--panel-soft),var(--panel));
+  border-radius:16px;
+  border:1px solid var(--line);
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  cursor:pointer;
+  transition:.2s;
+  box-shadow:0 12px 28px rgba(0,0,0,.24);
+}
+.card:hover{
+  transform:translateY(-4px);
+  border-color:var(--red);
+  box-shadow:0 16px 36px rgba(0,0,0,.36);
+}
+
+/* LOGO GRANDE */
+.logo{
+  width:88px;
+  height:88px;
+  border-radius:22px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:bold;
+  font-size:14px;
+  margin-bottom:12px;
+  color:#fff;
+  box-shadow:inset 0 0 28px rgba(255,255,255,.08),0 10px 24px rgba(0,0,0,.25);
+}
+
+/* NOMBRE */
+.name{
+  font-size:13px;
+  text-align:center;
+  padding:0 8px;
+  line-height:1.25;
+}
+.watch{
+  margin-top:8px;
+  color:#ffb4ba;
+  font-size:12px;
+  font-weight:bold;
+}
+.empty{
+  display:none;
+  max-width:1180px;
+  margin:12px auto;
+  padding:22px 14px;
+  color:var(--muted);
+  text-align:center;
+}
+
+/* MODAL PLAYER */
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.88);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:20;
+  padding:16px;
+}
+.modal-content{
+  width:min(1100px,100%);
+  height:min(78vh,720px);
+  background:#000;
+  position:relative;
+  border-radius:16px;
+  overflow:hidden;
+  border:1px solid var(--line);
+}
+.player-bar{
+  height:50px;
   background:var(--panel);
   border-bottom:1px solid var(--line);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:0 10px 0 16px;
 }
 .player-title{
   margin:0;
-  font-size:16px;
+  font-size:15px;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
 }
-.close{
-  border:0;
-  border-radius:10px;
-  padding:9px 12px;
-  background:var(--brand);
-  color:white;
-  cursor:pointer;
-  font-weight:700;
-}
-.close:hover{background:var(--brand-dark)}
 iframe{
   width:100%;
-  height:calc(100% - 52px);
+  height:calc(100% - 50px);
   border:0;
   background:#000;
 }
-footer{
-  width:min(1120px,calc(100% - 28px));
-  margin:auto;
-  padding:0 0 24px;
-  color:var(--muted);
-  font-size:13px;
+.close{
+  background:var(--red);
+  border:none;
+  border-radius:10px;
+  color:#fff;
+  padding:8px 12px;
+  cursor:pointer;
+  font-weight:bold;
 }
+.close:hover{background:var(--red-dark)}
+
+/* MODAL CUENTA */
+.account-modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.78);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:30;
+  padding:16px;
+}
+.account-box{
+  width:min(420px,100%);
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:20px;
+  box-shadow:0 24px 70px rgba(0,0,0,.45);
+}
+.account-box h2{margin:0 0 8px}.account-box p{margin:0 0 16px;color:var(--muted);line-height:1.4}
+.form{display:grid;gap:10px}
+.form button{
+  border:0;
+  border-radius:12px;
+  padding:12px;
+  background:var(--green);
+  color:#04130a;
+  font-weight:bold;
+  cursor:pointer;
+}
+.secondary{
+  width:100%;
+  margin-top:10px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:10px;
+  background:transparent;
+  color:#fff;
+  cursor:pointer;
+}
+.message{display:none;margin-top:12px;color:#a7f3d0;font-size:14px}
+
 @media (max-width:640px){
-  .brand-row{align-items:flex-start;flex-direction:column}
-  .free-badge{white-space:normal}
-  .grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
-  .player-box{height:78vh}
+  .header-top{align-items:flex-start;flex-direction:column}
+  .account-btn{width:100%}
+  .search-wrap{align-items:flex-start;flex-direction:column}
+  .count{padding-left:2px}
+  .grid{grid-template-columns:repeat(auto-fit,minmax(135px,1fr))}
 }
 </style>
 </head>
+
 <body>
+
 <header>
-  <div class="header-inner">
-    <div class="brand-row">
-      <div>
-        <h1>IPTV Gratis</h1>
-        <p class="subtitle">Canales en directo, sin registro y con buscador rápido.</p>
-      </div>
-      <span class="free-badge">● Gratis · Sin cuenta</span>
+  <div class="header-top">
+    <div>
+      <h1>IPTV <span>ESPAÑA</span></h1>
+      <p class="subtitle">Canales gratis en directo. Puedes verlos sin registrarte.</p>
     </div>
-    <div class="toolbar">
-      <input class="search" id="search" type="search" placeholder="Buscar canal..." autocomplete="off">
-    </div>
+    <button class="account-btn" id="accountBtn">Crear cuenta gratis</button>
+  </div>
+  <div class="search-wrap">
+    <input id="search" placeholder="Buscar canal..." autocomplete="off">
+    <span class="count" id="count">0 canales</span>
   </div>
 </header>
 
-<main>
-  <div class="info-row">
-    <span class="info-pill" id="channelCount">0 canales</span>
-    <span class="info-pill">Pulsa un canal para verlo</span>
-    <span class="info-pill">Sin pagos ni registro</span>
-  </div>
-  <section class="grid" id="grid" aria-label="Lista de canales"></section>
-  <div class="empty" id="empty">No hay canales con ese nombre.</div>
-</main>
+<p class="notice"><strong>Gratis y simple:</strong> pulsa un canal para verlo. La cuenta es opcional y no hace falta para reproducir.</p>
+<div class="grid" id="grid"></div>
+<div class="empty" id="empty">No encontramos canales con ese nombre.</div>
 
-<div class="modal" id="modal" aria-hidden="true">
-  <div class="player-box" role="dialog" aria-label="Reproductor de canal">
-    <div class="player-head">
-      <h2 class="player-title" id="playerTitle">Canal</h2>
-      <button class="close" id="closeBtn" type="button">Cerrar</button>
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <div class="player-bar">
+      <p class="player-title" id="playerTitle">Canal</p>
+      <button class="close" onclick="closeModal()">Cerrar</button>
     </div>
     <iframe id="player" allowfullscreen title="Reproductor IPTV"></iframe>
   </div>
 </div>
 
-<footer>
-  Servicio gratuito sin registro. Usa solo canales y contenidos con derechos o autorización de emisión.
-</footer>
+<div class="account-modal" id="accountModal">
+  <div class="account-box">
+    <h2>Cuenta gratis</h2>
+    <p>Guarda tu nombre en este navegador. Es opcional: los canales funcionan igual sin cuenta.</p>
+    <form class="form" id="accountForm">
+      <input id="name" placeholder="Tu nombre" required>
+      <input id="email" type="email" placeholder="Tu email" required>
+      <button type="submit">Guardar cuenta gratis</button>
+    </form>
+    <button class="secondary" id="closeAccount">Ahora no</button>
+    <div class="message" id="accountMessage">Cuenta guardada. Ya puedes seguir viendo canales gratis.</div>
+  </div>
+</div>
 
 <script>
+
+/* =========================
+   🇪🇸 CANALES ESPAÑA (PRIMER PROMPT)
+   ========================= */
 const channels = [
-  {id:230, name:"DAZN 1 UK", color:"#111827"},
-  {id:426, name:"DAZN 1 Bar DE", color:"#111827"},
-  {id:427, name:"DAZN 2 Bar DE", color:"#111827"},
-  {id:445, name:"DAZN 1 Spain", color:"#111827"},
-  {id:446, name:"DAZN 2 Spain", color:"#111827"},
-  {id:447, name:"DAZN 3 Spain", color:"#111827"},
-  {id:448, name:"DAZN 4 Spain", color:"#111827"},
-  {id:537, name:"DAZN F1 ES", color:"#e10600"},
-  {id:538, name:"DAZN LaLiga", color:"#00a859"},
-  {id:84, name:"Movistar LaLiga", color:"#00a3e0"},
-  {id:435, name:"Movistar Champions", color:"#0033a0"},
-  {id:436, name:"Movistar Deportes", color:"#222222"},
-  {id:438, name:"Movistar Deportes 2", color:"#222222"},
-  {id:526, name:"Movistar Deportes 3", color:"#222222"},
-  {id:527, name:"Movistar Deportes 4", color:"#222222"},
-  {id:528, name:"Movistar Golf", color:"#0a6b3a"},
-  {id:437, name:"Movistar Supercopa", color:"#e11d48"}
+{ id:230, name:"DAZN 1 UK", color:"#111" },
+{ id:426, name:"DAZN 1 Bar DE", color:"#111" },
+{ id:427, name:"DAZN 2 Bar DE", color:"#111" },
+{ id:445, name:"DAZN 1 Spain", color:"#111" },
+{ id:446, name:"DAZN 2 Spain", color:"#111" },
+{ id:447, name:"DAZN 3 Spain", color:"#111" },
+{ id:448, name:"DAZN 4 Spain", color:"#111" },
+{ id:537, name:"DAZN F1 ES", color:"#e10600" },
+{ id:538, name:"DAZN LaLiga", color:"#00a859" },
+
+{ id:84, name:"Movistar LaLiga", color:"#00a3e0" },
+{ id:435, name:"Movistar Champions", color:"#0033a0" },
+{ id:436, name:"Movistar Deportes", color:"#222" },
+{ id:438, name:"Movistar Deportes 2", color:"#222" },
+{ id:526, name:"Movistar Deportes 3", color:"#222" },
+{ id:527, name:"Movistar Deportes 4", color:"#222" },
+{ id:528, name:"Movistar Golf", color:"#0a6b3a" },
+{ id:437, name:"Movistar Supercopa", color:"#e50914" }
 ];
 
+/* LOGO GRANDE ESTILO APP */
+function logo(c){
+  return `
+  <div class="logo" style="background:${c.color}">
+    ${c.name.split(" ")[0]}
+  </div>`;
+}
+
+/* RENDER */
 const grid = document.getElementById("grid");
 const search = document.getElementById("search");
 const modal = document.getElementById("modal");
 const player = document.getElementById("player");
 const playerTitle = document.getElementById("playerTitle");
-const closeBtn = document.getElementById("closeBtn");
+const count = document.getElementById("count");
 const empty = document.getElementById("empty");
-const channelCount = document.getElementById("channelCount");
+const accountBtn = document.getElementById("accountBtn");
+const accountModal = document.getElementById("accountModal");
+const accountForm = document.getElementById("accountForm");
+const closeAccount = document.getElementById("closeAccount");
+const accountMessage = document.getElementById("accountMessage");
 
-function initials(name){
-  return name.split(" ").slice(0,2).map(word => word[0]).join("").toUpperCase();
+function render(filter=""){
+  grid.innerHTML="";
+
+  const visibleChannels = channels.filter(c => c.name.toLowerCase().includes(filter.toLowerCase()));
+
+  visibleChannels.forEach(c=>{
+    const div=document.createElement("div");
+    div.className="card";
+
+    div.innerHTML=`
+      ${logo(c)}
+      <div class="name">${c.name}</div>
+      <div class="watch">Ver gratis</div>
+    `;
+
+    div.onclick=()=>{
+      playerTitle.textContent=c.name;
+      player.src=`https://dlstreams.com/stream/stream-${c.id}.php`;
+      modal.style.display="flex";
+    };
+
+    grid.appendChild(div);
+  });
+
+  count.textContent=`${visibleChannels.length} canal${visibleChannels.length===1 ? "" : "es"}`;
+  empty.style.display=visibleChannels.length ? "none" : "block";
 }
 
-function renderChannels(filter = ""){
-  const query = filter.trim().toLowerCase();
-  const visibleChannels = channels.filter(channel => channel.name.toLowerCase().includes(query));
+/* SEARCH */
+search.addEventListener("input",e=>{
+  render(e.target.value);
+});
 
-  grid.innerHTML = visibleChannels.map(channel => `
-    <article class="card" tabindex="0" data-id="${channel.id}" data-name="${channel.name}">
-      <div class="logo" style="background:${channel.color}">${initials(channel.name)}</div>
-      <div>
-        <h2 class="channel-name">${channel.name}</h2>
-        <span class="watch-text">Ver ahora</span>
-      </div>
-    </article>
-  `).join("");
-
-  channelCount.textContent = `${visibleChannels.length} canal${visibleChannels.length === 1 ? "" : "es"}`;
-  empty.style.display = visibleChannels.length ? "none" : "block";
-}
-
-function openChannel(id, name){
-  playerTitle.textContent = name;
-  player.src = `https://dlstreams.com/stream/stream-${id}.php`;
-  modal.classList.add("open");
-  modal.setAttribute("aria-hidden","false");
-}
-
+/* MODAL */
 function closeModal(){
-  modal.classList.remove("open");
-  modal.setAttribute("aria-hidden","true");
-  player.src = "";
+  modal.style.display="none";
+  player.src="";
 }
 
-grid.addEventListener("click", event => {
-  const card = event.target.closest(".card");
-  if(!card) return;
-  openChannel(card.dataset.id, card.dataset.name);
+window.onclick=e=>{
+  if(e.target===modal) closeModal();
+  if(e.target===accountModal) hideAccount();
+};
+
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape"){
+    closeModal();
+    hideAccount();
+  }
 });
 
-grid.addEventListener("keydown", event => {
-  if(event.key !== "Enter" && event.key !== " ") return;
-  const card = event.target.closest(".card");
-  if(!card) return;
-  event.preventDefault();
-  openChannel(card.dataset.id, card.dataset.name);
+/* CUENTA GRATIS OPCIONAL */
+function updateAccountButton(){
+  const user=JSON.parse(localStorage.getItem("iptv_user") || "null");
+  accountBtn.textContent=user ? `Hola, ${user.name}` : "Crear cuenta gratis";
+}
+
+function showAccount(){
+  accountMessage.style.display="none";
+  accountModal.style.display="flex";
+}
+
+function hideAccount(){
+  accountModal.style.display="none";
+}
+
+accountBtn.addEventListener("click",showAccount);
+closeAccount.addEventListener("click",hideAccount);
+accountForm.addEventListener("submit",e=>{
+  e.preventDefault();
+  const user={
+    name:document.getElementById("name").value.trim(),
+    email:document.getElementById("email").value.trim()
+  };
+  localStorage.setItem("iptv_user",JSON.stringify(user));
+  updateAccountButton();
+  accountMessage.style.display="block";
+  setTimeout(hideAccount,900);
 });
 
-search.addEventListener("input", event => renderChannels(event.target.value));
-closeBtn.addEventListener("click", closeModal);
-modal.addEventListener("click", event => {
-  if(event.target === modal) closeModal();
-});
-document.addEventListener("keydown", event => {
-  if(event.key === "Escape") closeModal();
-});
+render();
+updateAccountButton();
 
-renderChannels();
 </script>
+
 </body>
 </html>

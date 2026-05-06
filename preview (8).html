@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IPTV España</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background:#0b0b0f;
+  color:#fff;
+}
+
+/* HEADER */
+header{
+  padding:12px;
+  background:#111;
+  position:sticky;
+  top:0;
+  z-index:10;
+}
+
+h1{
+  margin:0;
+  font-size:18px;
+  color:#e50914;
+}
+
+input{
+  width:100%;
+  margin-top:10px;
+  padding:10px;
+  border-radius:8px;
+  border:none;
+  background:#1a1a1a;
+  color:#fff;
+}
+
+/* GRID */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:14px;
+  padding:14px;
+}
+
+/* CARD */
+.card{
+  aspect-ratio:4/5;
+  background:#151515;
+  border-radius:14px;
+  border:1px solid #222;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.card:hover{
+  transform:scale(1.04);
+  border-color:#e50914;
+}
+
+/* LOGO GRANDE */
+.logo{
+  width:90px;
+  height:90px;
+  border-radius:18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:bold;
+  font-size:14px;
+  margin-bottom:10px;
+  color:#fff;
+}
+
+/* NOMBRE */
+.name{
+  font-size:12px;
+  text-align:center;
+  padding:0 6px;
+}
+
+/* MODAL */
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.92);
+  display:none;
+  align-items:center;
+  justify-content:center;
+}
+
+.modal-content{
+  width:85%;
+  height:80%;
+  background:#000;
+  position:relative;
+}
+
+iframe{
+  width:100%;
+  height:100%;
+  border:0;
+}
+
+.close{
+  position:absolute;
+  top:10px;
+  right:10px;
+  background:#e50914;
+  border:none;
+  color:#fff;
+  padding:6px 10px;
+  cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>IPTV ESPAÑA</h1>
+<input id="search" placeholder="Buscar canal...">
+</header>
+
+<div class="grid" id="grid"></div>
+
+<div class="modal" id="modal">
+<div class="modal-content">
+<button class="close" onclick="closeModal()">X</button>
+<iframe id="player"></iframe>
+</div>
+</div>
+
+<script>
+
+/* =========================
+   🇪🇸 CANALES ESPAÑA (PRIMER PROMPT)
+   ========================= */
+const channels = [
+{ id:230, name:"DAZN 1 UK", color:"#111" },
+{ id:426, name:"DAZN 1 Bar DE", color:"#111" },
+{ id:427, name:"DAZN 2 Bar DE", color:"#111" },
+{ id:445, name:"DAZN 1 Spain", color:"#111" },
+{ id:446, name:"DAZN 2 Spain", color:"#111" },
+{ id:447, name:"DAZN 3 Spain", color:"#111" },
+{ id:448, name:"DAZN 4 Spain", color:"#111" },
+{ id:537, name:"DAZN F1 ES", color:"#e10600" },
+{ id:538, name:"DAZN LaLiga", color:"#00a859" },
+
+{ id:84, name:"Movistar LaLiga", color:"#00a3e0" },
+{ id:435, name:"Movistar Champions", color:"#0033a0" },
+{ id:436, name:"Movistar Deportes", color:"#222" },
+{ id:438, name:"Movistar Deportes 2", color:"#222" },
+{ id:526, name:"Movistar Deportes 3", color:"#222" },
+{ id:527, name:"Movistar Deportes 4", color:"#222" },
+{ id:528, name:"Movistar Golf", color:"#0a6b3a" },
+{ id:437, name:"Movistar Supercopa", color:"#e50914" }
+];
+
+/* LOGO GRANDE ESTILO APP */
+function logo(c){
+  return `
+  <div class="logo" style="background:${c.color}">
+    ${c.name.split(" ")[0]}
+  </div>`;
+}
+
+/* RENDER */
+const grid = document.getElementById("grid");
+const search = document.getElementById("search");
+const modal = document.getElementById("modal");
+const player = document.getElementById("player");
+
+function render(filter=""){
+  grid.innerHTML="";
+
+  channels
+  .filter(c => c.name.toLowerCase().includes(filter.toLowerCase()))
+  .forEach(c=>{
+
+    const div=document.createElement("div");
+    div.className="card";
+
+    div.innerHTML=`
+      ${logo(c)}
+      <div class="name">${c.name}</div>
+    `;
+
+    div.onclick=()=>{
+      player.src=`https://dlstreams.com/stream/stream-${c.id}.php`;
+      modal.style.display="flex";
+    };
+
+    grid.appendChild(div);
+  });
+}
+
+/* SEARCH */
+search.addEventListener("input",e=>{
+  render(e.target.value);
+});
+
+/* MODAL */
+function closeModal(){
+  modal.style.display="none";
+  player.src="";
+}
+
+window.onclick=e=>{
+  if(e.target===modal) closeModal();
+};
+
+render();
+
+</script>
+
+</body>
+</html>

@@ -445,11 +445,47 @@ iframe{
   line-height:1.6;
 }
 
-.google-button-wrap{
+.google-login-button{
   display:flex;
-  min-height:44px;
+  width:100%;
+  min-height:50px;
   align-items:center;
+  justify-content:center;
+  gap:12px;
   margin-top:24px;
+  border:1px solid rgba(255,255,255,.16);
+  border-radius:18px;
+  background:#fff;
+  color:#1f2937;
+  font-size:15px;
+  font-weight:900;
+  cursor:pointer;
+  box-shadow:0 18px 45px rgba(0,0,0,.24);
+  transition:transform .2s,box-shadow .2s,opacity .2s;
+}
+
+.google-login-button:hover,
+.google-login-button:focus-visible{
+  transform:translateY(-2px);
+  box-shadow:0 22px 55px rgba(0,0,0,.32);
+  outline:none;
+}
+
+.google-login-button:disabled{
+  cursor:not-allowed;
+  opacity:.7;
+  transform:none;
+}
+
+.google-logo{
+  display:grid;
+  width:26px;
+  height:26px;
+  place-items:center;
+  border-radius:999px;
+  background:linear-gradient(135deg,#4285f4,#34a853 38%,#fbbc05 65%,#ea4335);
+  color:#fff;
+  font-weight:950;
 }
 
 .auth-message{
@@ -515,7 +551,6 @@ iframe{
 }
 
 </style>
-<script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 
 <body>
@@ -525,8 +560,11 @@ iframe{
     <div class="login-badge">Acceso seguro</div>
     <h2>Entra con Google</h2>
     <p>Inicia sesión para desbloquear la lista de canales y mantener tu experiencia personalizada en este dispositivo.</p>
-    <div class="google-button-wrap" id="googleButton" aria-label="Botón de inicio de sesión con Google"></div>
-    <p class="auth-message" id="authMessage">Configura tu Client ID de Google en la constante <strong>GOOGLE_CLIENT_ID</strong> para activar el inicio de sesión real.</p>
+    <button class="google-login-button" id="googleLoginButton" type="button">
+      <span class="google-logo" aria-hidden="true">G</span>
+      Continuar con Google
+    </button>
+    <p class="auth-message" id="authMessage" role="alert"></p>
   </div>
 </section>
 
@@ -581,108 +619,104 @@ iframe{
 </div>
 </div>
 
-<script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+import {
+  GoogleAuthProvider,
+  browserLocalPersistence,
+  getAuth,
+  onAuthStateChanged,
+  setPersistence,
+  signInWithPopup,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+import { getAnalytics, isSupported as isAnalyticsSupported } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-analytics.js";
 
-const GOOGLE_CLIENT_ID = "TU_CLIENT_ID_DE_GOOGLE.apps.googleusercontent.com";
-const AUTH_STORAGE_KEY = "iptv_google_user";
+const firebaseConfig = {
+  apiKey: "AIzaSyBC-n0_RpNwqZolA9V_ZdfxFqDyrNKA0Es",
+  authDomain: "bearkits-959fd.firebaseapp.com",
+  projectId: "bearkits-959fd",
+  storageBucket: "bearkits-959fd.firebasestorage.app",
+  messagingSenderId: "354621792425",
+  appId: "1:354621792425:web:6936d47decab70948a09b8",
+  measurementId: "G-5JH6592NL1"
+};
 
-function isGoogleClientConfigured(){
-  return GOOGLE_CLIENT_ID && !GOOGLE_CLIENT_ID.startsWith("TU_CLIENT_ID");
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const googleProvider = new GoogleAuthProvider();
+googleProvider.setCustomParameters({ prompt: "select_account" });
+
+isAnalyticsSupported().then((supported)=>{
+  if(supported){
+    getAnalytics(app);
+  }
+});
+
+setPersistence(auth, browserLocalPersistence).catch((error)=>{
+  showAuthMessage(`No se pudo preparar la sesión persistente: ${getFirebaseErrorMessage(error)}`);
+});
+
+function getFirebaseErrorMessage(error){
+  const messages = {
+    "auth/popup-closed-by-user":"Has cerrado la ventana de Google antes de completar el inicio de sesión.",
+    "auth/cancelled-popup-request":"Ya hay una ventana de inicio de sesión abierta.",
+    "auth/popup-blocked":"El navegador bloqueó la ventana emergente. Permite popups para esta página e inténtalo de nuevo.",
+    "auth/unauthorized-domain":"Este dominio todavía no está autorizado en Firebase Authentication. Añádelo en Firebase Console > Authentication > Settings > Authorized domains.",
+    "auth/network-request-failed":"No se pudo conectar con Firebase. Revisa tu conexión e inténtalo de nuevo."
+  };
+
+  return messages[error?.code] || error?.message || "Ha ocurrido un error inesperado.";
 }
 
-function decodeJwtPayload(token){
-  const payload = token.split(".")[1]
-    .replace(/-/g,"+")
-    .replace(/_/g,"/");
-  const json = decodeURIComponent(atob(payload).split("").map(char=>{
-    return `%${(`00${char.charCodeAt(0).toString(16)}`).slice(-2)}`;
-  }).join(""));
-
-  return JSON.parse(json);
+function showAuthMessage(message){
+  authMessage.textContent = message;
+  authMessage.classList.add("visible");
 }
 
-function saveGoogleUser(response){
-  const profile = decodeJwtPayload(response.credential);
-
-  localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({
-    name: profile.name || profile.email || "Usuario Google",
-    email: profile.email || "",
-    picture: profile.picture || "",
-    loggedAt: new Date().toISOString()
-  }));
-
-  showApp();
+function clearAuthMessage(){
+  authMessage.textContent = "";
+  authMessage.classList.remove("visible");
 }
 
-function getStoredUser(){
-  const rawUser = localStorage.getItem(AUTH_STORAGE_KEY);
-
-  if(!rawUser){
-    return null;
-  }
-
-  try{
-    return JSON.parse(rawUser);
-  }catch(error){
-    localStorage.removeItem(AUTH_STORAGE_KEY);
-    return null;
-  }
+function renderUser(user){
+  userName.textContent = user.displayName || user.email || "Usuario Google";
+  userAvatar.src = user.photoURL || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' x2='1' y1='0' y2='1'%3E%3Cstop stop-color='%23ff365e'/%3E%3Cstop offset='1' stop-color='%2325d0ff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='80' height='80' rx='40' fill='url(%23g)'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' fill='white' font-size='34' font-family='Arial' font-weight='700'%3EU%3C/text%3E%3C/svg%3E";
 }
 
-function renderGoogleSignIn(retries=12){
-  if(!isGoogleClientConfigured()){
-    authMessage.classList.add("visible");
-    return;
-  }
-
-  if(!window.google?.accounts?.id){
-    if(retries > 0){
-      setTimeout(()=>renderGoogleSignIn(retries - 1),250);
-      return;
-    }
-
-    authMessage.textContent = "No se pudo cargar Google Identity Services. Revisa tu conexión e intenta de nuevo.";
-    authMessage.classList.add("visible");
-    return;
-  }
-
-  google.accounts.id.initialize({
-    client_id: GOOGLE_CLIENT_ID,
-    callback: saveGoogleUser
-  });
-
-  google.accounts.id.renderButton(googleButton,{
-    theme:"filled_blue",
-    size:"large",
-    shape:"pill",
-    text:"signin_with",
-    locale:"es",
-    width:260
-  });
-}
-
-function showApp(){
-  const user = getStoredUser();
-
-  if(!user){
-    loginScreen.hidden = false;
-    appShell.hidden = true;
-    return;
-  }
-
-  userName.textContent = user.name;
-  userAvatar.src = user.picture || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' x2='1' y1='0' y2='1'%3E%3Cstop stop-color='%23ff365e'/%3E%3Cstop offset='1' stop-color='%2325d0ff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='80' height='80' rx='40' fill='url(%23g)'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' fill='white' font-size='34' font-family='Arial' font-weight='700'%3EU%3C/text%3E%3C/svg%3E";
+function showApp(user){
+  renderUser(user);
   loginScreen.hidden = true;
   appShell.hidden = false;
+  clearAuthMessage();
 }
 
-function logout(){
-  localStorage.removeItem(AUTH_STORAGE_KEY);
-  if(window.google?.accounts?.id){
-    google.accounts.id.disableAutoSelect();
-  }
+function showLogin(){
   appShell.hidden = true;
   loginScreen.hidden = false;
+}
+
+async function loginWithGoogle(){
+  clearAuthMessage();
+  googleLoginButton.disabled = true;
+  googleLoginButton.textContent = "Abriendo Google...";
+
+  try{
+    await signInWithPopup(auth, googleProvider);
+  }catch(error){
+    showAuthMessage(getFirebaseErrorMessage(error));
+  }finally{
+    googleLoginButton.disabled = false;
+    googleLoginButton.innerHTML = '<span class="google-logo" aria-hidden="true">G</span>Continuar con Google';
+  }
+}
+
+async function logout(){
+  try{
+    await signOut(auth);
+  }catch(error){
+    showAuthMessage(getFirebaseErrorMessage(error));
+  }
 }
 
 /* =========================
@@ -722,7 +756,7 @@ function initials(name){
 /* RENDER */
 const loginScreen = document.getElementById("loginScreen");
 const appShell = document.getElementById("appShell");
-const googleButton = document.getElementById("googleButton");
+const googleLoginButton = document.getElementById("googleLoginButton");
 const authMessage = document.getElementById("authMessage");
 const userAvatar = document.getElementById("userAvatar");
 const userName = document.getElementById("userName");
@@ -781,6 +815,7 @@ clearSearch.addEventListener("click",()=>{
   render();
 });
 
+googleLoginButton.addEventListener("click",loginWithGoogle);
 logoutButton.addEventListener("click",logout);
 
 /* MODAL */
@@ -788,6 +823,8 @@ function closeModal(){
   modal.style.display="none";
   player.src="";
 }
+
+window.closeModal = closeModal;
 
 window.onclick=e=>{
   if(e.target===modal) closeModal();
@@ -797,9 +834,13 @@ window.addEventListener("keydown",e=>{
   if(e.key === "Escape") closeModal();
 });
 
-window.addEventListener("load",()=>{
-  showApp();
-  renderGoogleSignIn();
+onAuthStateChanged(auth,(user)=>{
+  if(user){
+    showApp(user);
+    return;
+  }
+
+  showLogin();
 });
 
 render();
